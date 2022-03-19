@@ -7,11 +7,179 @@
     <title>Document</title>
 </head>
 <body>
-    <script type="text/javascript" src="../js/test.js"></script>
+    <script type="text/javascript" src="../js/_.js"></script>
     <script>
 
+var users = [{ id : 1, name : 'ID' , age : 36}
+            ,{ id : 2, name : 'BJ' , age : 32}
+            ,{ id : 3, name : 'JM' , age : 34}
+            ,{ id : 4, name : 'PJ' , age : 24}
+            ,{ id : 5, name : 'HA' , age : 27}
+            ,{ id : 6, name : 'JE' , age : 40}
+            ,{ id : 7, name : 'JI' , age : 41}
+            ,{ id : 8, name : 'MP' , age : 24}
+            ]
 
-        
+
+
+
+var a = function(arr){ return arr.age > 30}
+
+var x = function(arr){ return arr.name + "님 안녕하세요";}
+
+console.log(_map(users, x));
+console.log(_filter(users, a));
+
+//메소드는 배열로만 가능, But 함수형은 다형성을 가지고 있다. 배열이 아니여도 동작이 가능 함수형의 장점
+//데이터가 먼저 나오는 방식은 데이터가 있어야 기능을 수행할 수 있다.
+//함수는 먼저 만들 수 있고, 데이터가 생기지 않아도 가능함으로 평가시점이 자유롭다.
+
+
+console.log([1,2,3,4,5].filter(function(val){
+    return val >= 3
+}))
+
+console.log([1,2,3,4,5].map(function(val){
+    return val * 10;
+}))
+
+console.log((document.querySelectorAll('*')));
+
+console.log(_map(document.querySelectorAll('*'), function(node){
+    return node.nodeName + "무야호";
+}));
+
+console.log(_map([1,2,3,4,5] , function(v){
+    return v + 20;
+}));
+
+
+
+
+var add1 = function(a, b){
+    return a + b;
+}
+
+console.log(add1(10, 5));
+
+var add = _curry(function (a, b){
+    return a+b;
+});
+
+var add10 = add(10);
+
+console.log(add10(5));
+console.log(add(10)(5));
+
+console.log(add(10, 1));
+
+var sub = _curry(function(a, b){
+    return a - b;
+})
+
+var sub10 = sub(10);
+
+console.log(sub(10, 5));
+console.log(sub10(3));
+
+console.log(sub(5, 10));
+
+var subr = _curryr(function(a, b){
+    return a - b;
+})
+
+var sub5 = subr(5);
+console.log(sub5(10));
+
+
+
+var user1 = users[0];
+console.log(user1);
+console.log(user1.name);
+console.log("get : " + _get(user1, 'name'));
+
+console.log("get_curryr : " + _get('name')(users[5]));
+
+var getName = _get('name');
+console.log(getName(users[4]));
+console.log(getName(users[10]));
+//console.log(users[10].name);
+console.log(_get(users[10], 'name'));
+
+console.log(
+    _map(
+        _filter(users, function(user){return user.age > 30}), 
+        _get('name')
+    )
+)
+
+console.log(
+    _map(
+        _filter(users, function(user){return user.age < 30}), 
+        _get('age')
+    )
+)
+console.clear;
+//_reduce 축약하는 함수, 
+
+//array slice 적용 Array.prototype.slice를 콜을 통해 사용
+var slice = Array.prototype.slice;
+
+function _rest(list, num){
+    return slice.call(list, num || 1)
+}
+
+var _reduce = function(list, iter, memo){
+    if(arguments.length == 2){
+        memo = list[0];
+        list = _rest(list)
+    }
+    each(list, function(val){
+        memo = iter(memo, val);
+    }) 
+    return memo;
+}        
+
+
+
+console.log(_reduce([1, 2, 3, 4], add, 2))
+
+console.log(
+    _reduce([1, 2, 2], add)
+)
+
+//_pipe 함수를 인자로 받아 함수들은 연속적으로 실행. 함수를 리턴
+
+function _pipe(){
+    var fns = arguments;
+    return function(arg){
+    return _reduce(fns, function(arg, fn){
+        return fn(arg);
+    }, arg);
+
+    }
+}
+
+var f1 = _pipe({
+    function(a) {return a + 1},
+    function(a) {return a * 2}
+}) 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     </script>
