@@ -45,3 +45,6 @@ var _curryr = function(fn){
 var _get = _curryr(function(obj, key){
     return obj == null ? undefined : obj[key];
 });
+
+var _map = _curryr(_map),
+    _filter = _curryr(_filter);

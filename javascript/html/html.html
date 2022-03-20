@@ -153,27 +153,72 @@ console.log(
 function _pipe(){
     var fns = arguments;
     return function(arg){
-    return _reduce(fns, function(arg, fn){
-        return fn(arg);
-    }, arg);
-
+        return _reduce(fns, function(arg, fn){
+            return fn(arg);
+        }, arg);
     }
 }
 
-var f1 = _pipe({
+var f1 = _pipe(
     function(a) {return a + 1},
-    function(a) {return a * 2}
-}) 
+    function(a) {return a * 2},
+    function(a) {return a * 10}
+); 
 
+console.log("-----pipe-----");
 
+console.log( f1(5) );
 
+// 2. _go
 
+function _go(arg){
+    var fns = _rest(arguments);
+    return _pipe.apply(null, fns)(arg);
+}
 
+_go(1, 
+function(a) {return a + 2},
+function(a) {return a * 3},
+function(a) {return a + 10},
+console.log
+)
 
+// users에 _go 적용
+_go(users,
+    function(users){
+    return _filter(users, function(user){return user.age>30});
+    },
+    function(users){
+        return _map(users, _get('name'));
+    },
+    console.log
+)
 
+_go(users,
+    function(users){
+    return _filter(users, function(user){return user.age<30});
+    },
+    function(users){
+        return _map(users, _get('age'));
+    },
+    console.log
+)
 
+console.log(_map([1, 2, 3, 4], function(val) { return val * 2}));
 
+console.log(_map(function(val){return val * 2})([1, 2, 3, 4, 5]));
 
+_go(users,
+    _filter(function(user){return user.age>30}),
+    _map(_get('name')),
+    console.log
+)
+
+_go(users,
+   _filter(user => user.age < 30),
+   _map(_get('age')),
+   console.log
+)
 
 
 
