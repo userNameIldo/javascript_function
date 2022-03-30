@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+
+
+        /*
+        function add1(a, b) {return a + b;}
+        console.dir(add1);
+
+        function add2(a, b){ return a + b + c};
+
+
+
+        var persons = [{"name":"홍길동", age:30}
+        ,{"name":"강감찬", age:25}
+        ,{"name":"이순신", age:35}];
+
+
+        //filter 걸러내는것
+        var filter = function(list, predi){
+            //1. 담을 결과 생성 자료구조 , 배열 사용 
+            const ret_list = [];
+
+            for(let i = 0; i < list.length; i++){
+                if(predi(list[i])){
+                    ret_list.push(list[i]);
+                }
+            }
+            return ret_list;
+        }
+        
+        filter(persons, function(user){ return user.age >=20 ;});
+
+        //mapping함수 
+        var map = function(list, mapper){
+            const ret_list = [];
+
+            for(let i = 0; i < list.length; i++){
+                ret_list.push(mapper(list[i]));
+            }
+
+            return ret_list;
+
+        }
+
+        map(persons, function(user) {return user.name + " : " + user.age;});
+        */
+
+        
+        var persons = [{"name":"홍길동", age:30}
+        ,{"name":"강감찬", age:25}
+        ,{"name":"이순신", age:35}];
+
+        //each 함수
+        var each = function(list, iter){
+            
+            for(let i = 0; i < list.length; i++){
+                iter(list[i]);
+            }
+
+        }
+        
+        var filter = function(list, predi){
+            //1. 담을 결과 생성 자료구조 , 배열 사용 
+            const ret_list = [];
+            
+            each(list, function(val){
+                if(predi(val)){
+                    ret_list.push(val);
+                }
+            });
+            return ret_list;
+        }
+
+        filter(persons, function(user){ return user.age >=20 ;});
+
+        var map = function(list, mapper){
+            const ret_list = [];
+
+            each(list, function(val){
+                ret_list.push(mapper(val));
+            });
+
+            return ret_list;
+
+        }
+
+        map(persons, function(user) {return user.name + " : " + user.age;});
+
+        map(filter(persons, function(user){
+            return user.age > 20;
+        }), function(usr){return usr.age * 10});
+
+        //일급의 활용성
+        /*
+        var test = function(a){
+            return function(b){
+                return a+b;
+            }
+        }
+        */
+ 
+        /*        
+        function add(a, b){
+            return a + b;
+        }
+
+        var add_maker = function(fn){
+            return function(a){
+                return function(b){
+                    return fn(a, b);
+                }
+            }
+        };
+        
+        fadd = add_maker(add);
+        add10 = fadd(10)
+        add10(20);
+
+        var filter = add_maker(filter)
+
+        var filterPerson = filter(persons);
+
+        filterPerson(function(user){return user.age > 30;});
+        */
+
+        function add(a, b){
+            return a + b;
+        }
+
+        var add_maker = function(fn){
+            return function(a, b){
+                    return fn(a, b);
+            }
+        };
+
+
+        var curry = function(fn){
+            return function(a){
+                return function(b){
+                    return fn(a, b);
+                }
+            }
+        }
+
+        var add = function(a, b){return a + b;}
+        var add = curry(add);
+        
+        //curry, curryr
+        var curry = function(fn){
+            return function(a, b){
+            if(arguments.length == 2) return fn(a, b);
+                return function(b){
+                    return fn(a, b);
+                }
+            }
+        }
+
+        var sub = curry(function(a, b){return a - b});
+
+        var curryr = function(fn){
+            return function(a, b){
+                if(arguments.length == 2) return fn(a, b);
+                return function(b){
+                    return fn(b, a);
+                }
+            }
+        }
+
+        //reduce
+        var reduce = function(list, iter, memo){
+            if(arguments.length == 2){
+                memo = list[0];
+                list = Array.prototype.slice.call(list,1);
+            }
+
+            each(list, function(val){
+                return memo = iter(memo, val);
+            });
+
+            return memo;
+        }
+
+        //pipe : 함수를 연속해서 실행해 주는 역할
+        var pipe = function(){
+            var fns = arguments;
+            //초기값을 받는 함수
+            return function(arg){
+                return reduce(fns, function(val, fn){
+                    return fn(val);
+                },arg);
+            }
+        }
+
+        var f1 = curryr(function(a, b){return a + b;})
+        var add = f1(10)
+
+        var f2 = curryr(function(a, b){return a - b;})
+        var sub = f2(7)
+
+        var f = pipe(add, sub)
+        f(100)
+
+        var go = function(arg){
+            var fns = Array.prototype.slice.call(arguments,1);
+            return pipe.apply(null , fns)(arg);
+        }
+
+        var persons = [{"name":"홍길동", age:30}
+        ,{"name":"강감찬", age:25}
+        ,{"name":"이순신", age:35}];
+
+        var _filter = curryr(filter);
+
+        var _map = curryr(map);
+
+        go(persons, 
+           _filter(function(user){return user.age > 20; }),
+           _map(function(user){return "====" + user.name + "===="}));
+
+
+    </script>
+
+
+</body>
+</html>
